@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!-- title, description, Open Graph and Twitter tags are injected from
+         src/config/wedding.ts by the "wedding-meta" plugin in vite.config.ts -->
+    <title>%WEDDING_TITLE%</title>
+    <meta name="theme-color" content="#641B2B" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <style>
+      /* paint velvet before CSS loads — no white flash in WhatsApp's browser */
+      html, body { background: #3D101D; margin: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <p style="color:#E8D6A3;font:18px Georgia,serif;text-align:center;padding:3rem 1rem">%WEDDING_TITLE%</p>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

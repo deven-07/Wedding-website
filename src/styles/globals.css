@@ -1,0 +1,658 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Invocation font — subset to "|| श्री गणेशाय नमः ||" (~12 KB instead of ~184 KB) */
+@font-face {
+  font-family: 'Tiro Devanagari Sanskrit';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/tiro-invocation-deva.woff2') format('woff2');
+  unicode-range: U+0900-097F, U+200C-200D, U+25CC;
+}
+@font-face {
+  font-family: 'Tiro Devanagari Sanskrit';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/tiro-invocation-latin.woff2') format('woff2');
+  unicode-range: U+0020, U+007C;
+}
+
+/* ------------------------------------------------------------------ */
+/* Metric-matched fallbacks — keep layout stable while webfonts load   */
+/* ------------------------------------------------------------------ */
+@font-face {
+  font-family: 'Cormorant Fallback';
+  src: local('Georgia'), local('Times New Roman');
+  size-adjust: 87%;
+  ascent-override: 106%;
+  descent-override: 33%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Cinzel Fallback';
+  src: local('Times New Roman'), local('Georgia');
+  size-adjust: 116%;
+  ascent-override: 87%;
+  descent-override: 34%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Lato Fallback';
+  src: local('Arial'), local('Helvetica');
+  size-adjust: 97%;
+  ascent-override: 101%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}
+
+/* ------------------------------------------------------------------ */
+/* Tokens                                                             */
+/* ------------------------------------------------------------------ */
+@layer base {
+  :root {
+    --maroon: #641b2b;
+    --burgundy: #3d101d;
+    --gold: #c9a45c;
+    --champagne: #e8d6a3;
+    --ivory: #fff8e9;
+    --cream: #f5ebd8;
+    --saffron: #d88b36;
+
+    /* derived mixes of gold + burgundy (no new hues) */
+    --gold-deep: #8a6140; /* 55% gold */
+    --gold-antique: #754b36; /* 40% gold */
+    --gold-mid: #a67f4c; /* 75% gold */
+
+    --foil: linear-gradient(
+      100deg,
+      var(--gold-deep) 0%,
+      var(--gold) 20%,
+      var(--champagne) 38%,
+      var(--gold) 52%,
+      var(--gold-deep) 70%,
+      var(--gold) 86%,
+      var(--champagne) 100%
+    );
+    --foil-paper: linear-gradient(
+      100deg,
+      var(--gold-antique) 0%,
+      var(--gold-deep) 22%,
+      var(--gold-mid) 40%,
+      var(--gold-deep) 56%,
+      var(--gold-antique) 74%,
+      var(--gold-deep) 88%,
+      var(--gold-mid) 100%
+    );
+
+    /* Textures — tiny inline SVGs, no raster images */
+    --noise-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .24 0 0 0 0 .06 0 0 0 0 .11 0 0 0 .55 -.18'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    --fibres-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .09' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .79 0 0 0 0 .64 0 0 0 0 .36 0 0 0 .36 -.16'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+    --noise-velvet: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='v'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .91 0 0 0 0 .84 0 0 0 0 .64 0 0 0 .32 -.12'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23v)'/%3E%3C/svg%3E");
+    --damask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='112' height='112' viewBox='0 0 112 112'%3E%3Cg fill='none' stroke='%23C9A45C' stroke-width='.9'%3E%3Cpath d='M56 10c10 13 12 25 0 38C44 35 46 23 56 10zM56 102c-10-13-12-25 0-38 12 13 10 25 0 38zM10 56c13-10 25-12 38 0-13 12-25 10-38 0zM102 56c-13 10-25 12-38 0 13-12 25-10 38 0z'/%3E%3Ccircle cx='56' cy='56' r='5'/%3E%3Ccircle cx='56' cy='56' r='13' stroke-dasharray='1.5 3.2'/%3E%3Cpath d='M0 14c8 0 14-6 14-14M112 14c-8 0-14-6-14-14M0 98c8 0 14 6 14 14M112 98c-8 0-14 6-14 14'/%3E%3C/g%3E%3Cg fill='%23C9A45C'%3E%3Ccircle cx='0' cy='0' r='2.6'/%3E%3Ccircle cx='112' cy='0' r='2.6'/%3E%3Ccircle cx='0' cy='112' r='2.6'/%3E%3Ccircle cx='112' cy='112' r='2.6'/%3E%3Ccircle cx='56' cy='0' r='1.4'/%3E%3Ccircle cx='0' cy='56' r='1.4'/%3E%3Ccircle cx='112' cy='56' r='1.4'/%3E%3Ccircle cx='56' cy='112' r='1.4'/%3E%3C/g%3E%3C/svg%3E");
+
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+
+    color-scheme: light;
+  }
+
+  html {
+    background-color: var(--burgundy);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+    overflow-x: clip;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-burgundy font-serif text-lead text-champagne antialiased;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-x: clip;
+    font-feature-settings: 'kern', 'liga';
+    text-rendering: optimizeLegibility;
+  }
+
+  /* scroll lock while the sealed invitation is showing */
+  body.is-locked {
+    overflow: hidden;
+    touch-action: none;
+  }
+
+  ::selection {
+    background: rgb(201 164 92 / 0.35);
+    color: inherit;
+  }
+
+  /* Visible gold focus ring everywhere; deeper gold on paper for 3:1 contrast */
+  :focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  .on-paper :focus-visible {
+    outline-color: var(--gold-deep);
+  }
+
+  [lang='sa'],
+  [lang='hi'] {
+    @apply font-deva;
+  }
+
+  img,
+  svg {
+    max-width: 100%;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Components                                                         */
+/* ------------------------------------------------------------------ */
+@layer components {
+  /* Materials ------------------------------------------------------- */
+  .tex-paper {
+    background-color: var(--ivory);
+    background-image:
+      var(--noise-paper),
+      var(--fibres-paper),
+      radial-gradient(ellipse 120% 90% at 50% 45%, transparent 55%, rgb(232 214 163 / 0.55) 100%);
+    background-size: 220px 220px, 360px 360px, 100% 100%;
+    color: var(--burgundy);
+  }
+
+  .tex-cream {
+    background-color: var(--cream);
+    background-image:
+      var(--noise-paper),
+      radial-gradient(ellipse at 50% 40%, transparent 50%, rgb(232 214 163 / 0.6) 100%);
+    background-size: 220px 220px, 100% 100%;
+    color: var(--burgundy);
+  }
+
+  .tex-velvet {
+    background-color: var(--maroon);
+    background-image:
+      var(--noise-velvet),
+      linear-gradient(to bottom, transparent 82%, var(--burgundy) 100%),
+      radial-gradient(ellipse 110% 80% at 50% 30%, var(--maroon) 0%, rgb(100 27 43 / 0.92) 40%, var(--burgundy) 100%);
+    background-size: 200px 200px, 100% 100%, 100% 100%;
+    color: var(--champagne);
+  }
+
+  .tex-velvet-deep {
+    background-color: var(--burgundy);
+    background-image:
+      var(--noise-velvet),
+      radial-gradient(ellipse 90% 60% at 50% 50%, rgb(100 27 43 / 0.85) 0%, var(--burgundy) 80%);
+    background-size: 200px 200px, 100% 100%;
+    color: var(--champagne);
+  }
+
+  /* Haldi-Carnival card: sun-washed saffron on cream */
+  .skin-haldi {
+    background-color: var(--cream);
+    background-image:
+      var(--noise-paper),
+      radial-gradient(120% 55% at 50% 0%, rgb(216 139 54 / 0.55), rgb(216 139 54 / 0.18) 55%, transparent 85%),
+      linear-gradient(180deg, rgb(201 164 92 / 0.32), rgb(216 139 54 / 0.12) 60%, rgb(201 164 92 / 0.22));
+    background-size: 220px 220px, 100% 100%, 100% 100%;
+    color: var(--burgundy);
+  }
+
+  /* Reception card: midnight burgundy with a fine star field */
+  .skin-night {
+    background-color: var(--burgundy);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cg fill='%23E8D6A3'%3E%3Ccircle cx='12' cy='18' r='.7' opacity='.7'/%3E%3Ccircle cx='70' cy='9' r='.5' opacity='.5'/%3E%3Ccircle cx='101' cy='44' r='.8' opacity='.6'/%3E%3Ccircle cx='38' cy='66' r='.5' opacity='.45'/%3E%3Ccircle cx='86' cy='92' r='.6' opacity='.55'/%3E%3Ccircle cx='20' cy='104' r='.5' opacity='.4'/%3E%3Ccircle cx='58' cy='38' r='.4' opacity='.5'/%3E%3C/g%3E%3C/svg%3E"),
+      radial-gradient(110% 55% at 50% 12%, rgb(100 27 43 / 0.95), rgb(61 16 29) 72%);
+    background-size: 120px 120px, 100% 100%;
+    color: var(--champagne);
+  }
+
+  /* faint damask overlay for velvet surfaces */
+  .tex-damask {
+    position: relative;
+    isolation: isolate;
+  }
+  .tex-damask::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: var(--damask);
+    background-size: 112px 112px;
+    opacity: 0.07;
+    -webkit-mask-image: radial-gradient(ellipse at 50% 45%, #000 30%, transparent 85%);
+    mask-image: radial-gradient(ellipse at 50% 45%, #000 30%, transparent 85%);
+    pointer-events: none;
+  }
+
+  /* vignette for the deepest sections */
+  .vignette::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 55%, rgb(61 16 29 / 0.7) 100%);
+  }
+
+  /* Gold foil -------------------------------------------------------- */
+  .foil-text {
+    background-image: var(--foil);
+    background-size: 240% 100%;
+    background-position: 0% 50%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: var(--gold);
+    -webkit-text-fill-color: transparent;
+  }
+  .foil-text-paper {
+    background-image: var(--foil-paper);
+    background-size: 240% 100%;
+    background-position: 0% 50%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: var(--gold-deep);
+    -webkit-text-fill-color: transparent;
+  }
+  .shimmer {
+    animation: foil-shimmer 9s ease-in-out infinite;
+  }
+  /* per-letter foil (letters animate individually) — lit from above */
+  .foil-letter-paper {
+    background-image: linear-gradient(
+      172deg,
+      var(--gold-mid) 0%,
+      var(--gold-deep) 40%,
+      var(--gold-antique) 72%,
+      var(--gold-deep) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: var(--gold-deep);
+    -webkit-text-fill-color: transparent;
+  }
+  .foil-letter {
+    background-image: linear-gradient(172deg, var(--champagne) 0%, var(--gold) 45%, var(--gold-deep) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: var(--gold);
+    -webkit-text-fill-color: transparent;
+  }
+  /* light sweep across foil lettering (transform-only, soft-light blend) */
+  .sheen {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    mix-blend-mode: soft-light;
+  }
+  .sheen::before {
+    content: '';
+    position: absolute;
+    inset: -10% auto -10% 0;
+    width: 45%;
+    background: linear-gradient(100deg, transparent, rgb(255 248 233 / 0.95) 50%, transparent);
+    transform: translateX(-120%);
+    animation: sheen-sweep 8s ease-in-out 3.5s infinite;
+  }
+
+  /* gradient gold border using the padding-box / border-box trick */
+  .foil-border {
+    --surface: var(--maroon);
+    border: 1px solid transparent;
+    background:
+      linear-gradient(var(--surface), var(--surface)) padding-box,
+      var(--foil) border-box;
+  }
+
+  /* Typography presets ---------------------------------------------- */
+  .heading-royal {
+    @apply font-royal text-h2 font-medium uppercase;
+    text-wrap: balance;
+  }
+  .eyebrow {
+    @apply font-sans text-meta font-bold uppercase;
+  }
+  .quote {
+    @apply font-serif text-quote italic;
+    text-wrap: pretty;
+  }
+
+  /* Layout helpers --------------------------------------------------- */
+  .screen-h {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  .container-prose {
+    @apply mx-auto w-full max-w-prose px-gutter;
+  }
+  .container-events {
+    @apply mx-auto w-full max-w-events px-gutter;
+  }
+  .safe-pad-x {
+    padding-left: max(theme('spacing.gutter'), var(--safe-left));
+    padding-right: max(theme('spacing.gutter'), var(--safe-right));
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Utilities                                                          */
+/* ------------------------------------------------------------------ */
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  .clip-x {
+    overflow-x: hidden;
+    overflow-x: clip;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .decor {
+    pointer-events: none;
+    user-select: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Keyframes (all transform / opacity only, except foil sweep)        */
+/* ------------------------------------------------------------------ */
+@keyframes foil-shimmer {
+  0%,
+  60% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+@keyframes sheen-sweep {
+  0%,
+  65% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(340%);
+  }
+}
+@keyframes spin-cw {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes spin-ccw {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+@keyframes flame-flicker {
+  0%,
+  100% {
+    transform: scale(1, 1) skewX(0deg);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(0.94, 1.06) skewX(-2deg);
+    opacity: 0.92;
+  }
+  50% {
+    transform: scale(1.04, 0.95) skewX(1.5deg);
+  }
+  75% {
+    transform: scale(0.97, 1.04) skewX(-1deg);
+    opacity: 0.95;
+  }
+}
+@keyframes glow-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+@keyframes petal-fall {
+  from {
+    transform: translate3d(0, -12vh, 0);
+  }
+  to {
+    transform: translate3d(var(--drift, 0px), 112vh, 0);
+  }
+}
+@keyframes petal-sway {
+  0%,
+  100% {
+    transform: translateX(0) rotate(var(--rot-a, -20deg));
+  }
+  50% {
+    transform: translateX(var(--sway, 24px)) rotate(var(--rot-b, 40deg));
+  }
+}
+
+.anim-breathe {
+  animation: glow-breathe 4s ease-in-out infinite;
+}
+.anim-bob {
+  animation: bob 2.6s ease-in-out infinite;
+}
+.anim-spin-slow {
+  animation: spin-cw 120s linear infinite;
+}
+.anim-spin-rev {
+  animation: spin-ccw 180s linear infinite;
+}
+.anim-spin-slower {
+  animation: spin-cw 240s linear infinite;
+}
+
+@keyframes btn-sweep {
+  0%,
+  55% {
+    transform: translateX(-120%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(320%) skewX(-20deg);
+  }
+}
+@keyframes hint-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Falling petals (PetalLayer) — transform only */
+.petal {
+  position: absolute;
+  top: 0;
+  display: block;
+  animation: petal-fall var(--dur, 14s) linear var(--delay, 0s) infinite;
+  will-change: transform;
+}
+.petal-inner {
+  display: block;
+  animation: petal-sway var(--sway-dur, 4s) ease-in-out infinite;
+}
+.petal-inner > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@keyframes eq {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.eq-bar {
+  height: 100%;
+  transform-origin: 50% 100%;
+  animation: eq 0.9s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.anim-twinkle {
+  animation: twinkle 2.6s ease-in-out infinite;
+}
+.anim-spin-pin {
+  animation: spin-cw 5s linear infinite;
+}
+.anim-spin-pin-rev {
+  animation: spin-ccw 6.5s linear infinite;
+}
+@keyframes bunting-sway {
+  0%,
+  100% {
+    transform: rotate(-2.5deg);
+  }
+  50% {
+    transform: rotate(2.5deg);
+  }
+}
+.anim-bunting {
+  transform-origin: 50% 0;
+  animation: bunting-sway 3.4s ease-in-out infinite;
+}
+@keyframes rise-fade {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.6);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--dx, 0px), -140px, 0) scale(1);
+    opacity: 0;
+  }
+}
+.anim-rise {
+  animation: rise-fade 2.4s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0s) both;
+}
+
+/* vine bands for the Blessings floral border */
+.vine-x {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='16' viewBox='0 0 48 16'%3E%3Cg fill='none' stroke='%238A6140' stroke-width='.9' stroke-linecap='round'%3E%3Cpath d='M0 8c6-6 12-6 12 0s6 6 12 0 12-6 12 0 6 6 12 0'/%3E%3Cpath d='M12 8c2-5 6-6 9-5-1 3-5 5-9 5zM36 8c-2 5-6 6-9 5 1-3 5-5 9-5z'/%3E%3C/g%3E%3Cg fill='%238A6140'%3E%3Ccircle cx='24' cy='4' r='1.3'/%3E%3Ccircle cx='0' cy='12' r='1.3'/%3E%3Ccircle cx='48' cy='12' r='1.3'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-size: 48px 16px;
+  background-position: center;
+}
+.vine-y {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='48' viewBox='0 0 16 48'%3E%3Cg fill='none' stroke='%238A6140' stroke-width='.9' stroke-linecap='round'%3E%3Cpath d='M8 0c-6 6-6 12 0 12s6 6 0 12-6 12 0 12 6 6 0 12'/%3E%3Cpath d='M8 12c-5 2-6 6-5 9 3-1 5-5 5-9zM8 36c5-2 6-6 5-9-3 1-5 5-5 9z'/%3E%3C/g%3E%3Cg fill='%238A6140'%3E%3Ccircle cx='4' cy='24' r='1.3'/%3E%3Ccircle cx='12' cy='0' r='1.3'/%3E%3Ccircle cx='12' cy='48' r='1.3'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: repeat-y;
+  background-size: 16px 48px;
+  background-position: center;
+}
+
+.anim-sweep {
+  animation: btn-sweep 4.8s ease-in-out infinite;
+}
+.anim-hint {
+  animation: hint-pulse 2.8s ease-in-out infinite;
+}
+
+/* Ambient pause: sections off-screen or hidden tab */
+[data-ambient='paused'] *,
+[data-ambient='paused']::before,
+[data-ambient='paused']::after {
+  animation-play-state: paused !important;
+}
+
+/* ------------------------------------------------------------------ */
+/* Reduced motion & low power                                         */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .shimmer,
+  .anim-spin-slow,
+  .anim-spin-rev,
+  .anim-spin-slower,
+  .anim-bob,
+  .anim-sweep,
+  .anim-spin-pin,
+  .anim-spin-pin-rev,
+  .anim-bunting,
+  .anim-twinkle,
+  .ambient-only {
+    animation: none !important;
+  }
+  .anim-rise {
+    animation-duration: 0.01s !important;
+  }
+  .sheen {
+    display: none;
+  }
+  .ambient-only {
+    display: none !important;
+  }
+}
+html[data-low-power='true'] .parallax-layer {
+  transform: none !important;
+}
+
+/* Windows high-contrast: drop gradient text so it stays readable */
+@media (forced-colors: active) {
+  .foil-text,
+  .foil-text-paper {
+    background: none;
+    color: CanvasText;
+    -webkit-text-fill-color: CanvasText;
+  }
+}
+
+/* Self-drawing strokes: <path pathLength={1} className="draw-in" /> */
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.draw-in {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+  animation: draw var(--draw-dur, 0.9s) cubic-bezier(0.65, 0, 0.35, 1) var(--draw-delay, 0s) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .draw-in {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
