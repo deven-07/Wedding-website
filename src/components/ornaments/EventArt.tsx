@@ -230,92 +230,189 @@ export function NightArt({ title, className = '', ...rest }: OrnamentProps) {
 }
 
 /* ---------------------------------------------------------------------- */
-/* Baarat Prasthan — the groom's horse, dhol & shehnai (on ivory)        */
+/* Baarat Prasthan — the groom's ghodi in full finery, under a palace arch */
 /* ---------------------------------------------------------------------- */
 
+type Pt = readonly [number, number];
+
+/** Evenly spaced points along a quadratic curve (for bead strands). */
+function along(p0: Pt, c: Pt, p1: Pt, n: number): Pt[] {
+  return Array.from({ length: n }, (_, i) => {
+    const t = i / (n - 1);
+    const q = (k: 0 | 1) => (1 - t) ** 2 * p0[k] + 2 * (1 - t) * t * c[k] + t ** 2 * p1[k];
+    return [Number(q(0).toFixed(1)), Number(q(1).toFixed(1))] as const;
+  });
+}
+
+function Marigold({ x, y, s }: { x: number; y: number; s: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <circle r="6" fill="#D88B36" />
+      {Array.from({ length: 10 }, (_, i) => {
+        const a = (i / 10) * Math.PI * 2;
+        return <circle key={i} cx={(Math.cos(a) * 5).toFixed(2)} cy={(Math.sin(a) * 5).toFixed(2)} r="2.2" fill="#D88B36" />;
+      })}
+      <circle r="3.4" fill="#C9A45C" />
+      <circle r="1.1" fill="#8A6140" />
+    </g>
+  );
+}
+
+const PETALS = [
+  [30, 40, 20],
+  [52, 18, -30],
+  [206, 22, 40],
+  [220, 52, -20],
+  [40, 86, 60],
+  [196, 40, 10],
+] as const;
+
+/** Leg outlines (relative), shared by the near and far pairs. */
+const LEG_FRONT = 'c2 12 3 20 3 28v16c0 3-1 6-3 9l-1 3h10v-4c0-3 1-5 1-8v-16c1-8 3-16 4-26z';
+const LEG_HIND = 'c10 4 18 12 16 26l-5 12v12c0 3 1 6 2 9l1 3h-10v-3c0-3 0-5 0-8v-14c-2-10-6-18-12-24z';
+const HEM = 'q-4.33 7-8.67 0'.repeat(6);
+
 export function BaaratArt({ title, className = '', ...rest }: OrnamentProps) {
+  const id = useId().replace(/:/g, '');
+  const coat = `url(#${id}-coat)`;
   return (
     <svg viewBox="0 0 240 160" className={className} {...a11yProps(title)} {...rest}>
       {title ? <title>{title}</title> : null}
-      {/* far legs (behind the body) */}
-      <g fill="#754B36">
-        <path d="M168 104l-5 20-2 18 3 4h-9l1-4 2-20 2-18z" />
-        <path d="M118 104l2 20 4 18 2 4h-9v-4l-4-18-1-20z" />
+      <defs>
+        <linearGradient id={`${id}-coat`} gradientUnits="userSpaceOnUse" x1="95" y1="10" x2="215" y2="150">
+          <stop offset="0" stopColor="#F3E6C2" />
+          <stop offset=".4" stopColor="#D9B979" />
+          <stop offset=".8" stopColor="#B48E58" />
+          <stop offset="1" stopColor="#94704A" />
+        </linearGradient>
+      </defs>
+
+      {/* jharokha arch */}
+      <g fill="none" stroke="#C9A45C" opacity=".55">
+        <path d="M58 152V78c0-30 30-50 62-62 32 12 62 32 62 62v74" strokeWidth=".8" />
+        <path d="M66 152V80c0-26 26-44 54-55 28 11 54 29 54 55v72" strokeWidth=".5" strokeDasharray="1.5 2.5" />
       </g>
-      {/* flowing tail */}
-      <path d="M188 66c16 4 22 26 16 56-4-10-8-22-16-36z" fill="url(#foil-grad-paper)" />
-      <path d="M192 74c8 8 10 22 8 38M190 80c4 8 6 18 5 28" fill="none" stroke="#754B36" strokeWidth=".8" opacity=".6" />
-      {/* body — side profile facing left: wedge head, long arched neck, slender legs */}
-      <path
-        d="M44 59c-1-4 1-9 5-14 4-6 9-13 13-19l2-13 4 9 4-8v10c12 2 24 14 32 26 4 6 8 9 14 10 14 3 30 3 44-1 14-3 26 3 28 17 1 10-1 18-5 24-1 8 1 16 4 22l-2 20 3 4h-10v-4l-1-18c-3-8-7-16-13-20-16 2-38 2-54 0l-4 20-1 18 3 4h-10v-4l1-18-1-28c-4-8-8-16-14-24-6-6-12-8-18-6-5 1-10 0-13-2-2-1-3-3-3-5z"
-        fill="url(#foil-grad-paper)"
-      />
-      {/* mane along the crest */}
-      <path d="M66 22c12 2 26 12 36 26 4 6 8 10 12 11-10 0-20-8-28-16-6-8-12-14-20-21z" fill="#641B2B" opacity=".6" />
-      {/* eye, nostril, bridle */}
-      <circle cx="57" cy="35" r="1.5" fill="#3D101D" />
-      <circle cx="47.5" cy="55" r="1" fill="#3D101D" opacity=".7" />
-      <g fill="none" stroke="#641B2B" strokeWidth="1.3" strokeLinecap="round">
-        <path d="M47 49l19-22M47 52c4 3 8 5 10 9" />
-      </g>
-      {/* kalangi plume on the poll */}
-      <g fill="none" stroke="#D88B36" strokeWidth="1.4" strokeLinecap="round">
-        <path d="M68 13c-2-6 0-10 5-12M68 13c3-4 7-5 12-5M68 13c-4-3-9-3-13-1" />
-      </g>
-      <g fill="#E8D6A3" stroke="#8A6140" strokeWidth=".5">
-        <circle cx="73.5" cy="1.5" r="1.8" />
-        <circle cx="80.5" cy="8" r="1.8" />
-        <circle cx="55" cy="12" r="1.8" />
-      </g>
-      {/* necklace beads across the neck */}
-      <g fill="#641B2B">
-        {Array.from({ length: 8 }, (_, i) => {
-          const t = i / 7;
-          const x = 80 + t * 12 - Math.sin(t * Math.PI) * 3;
-          const y = 40 + t * 34;
-          return <circle key={i} cx={x.toFixed(1)} cy={y.toFixed(1)} r="1.7" />;
-        })}
-      </g>
-      {/* saddle cloth (jhool) with jhalar tassels */}
-      <path d="M118 62c16 4 34 4 48-1l2 35c-16 7-36 7-50 2z" fill="#641B2B" stroke="#C9A45C" strokeWidth="1" />
-      <path d="M123 68c12 3 26 3 38-1l1 22c-12 5-28 5-39 1z" fill="none" stroke="#C9A45C" strokeWidth=".8" strokeDasharray="2 2" />
-      <circle cx="143" cy="80" r="5" fill="none" stroke="#C9A45C" strokeWidth="1" />
-      <circle cx="143" cy="80" r="1.8" fill="#C9A45C" />
-      <g fill="#C9A45C">
-        {Array.from({ length: 8 }, (_, i) => {
-          const x = 119 + i * 7;
-          const y = 97 + Math.sin((i / 7) * Math.PI) * 3;
-          return <path key={i} d={`M${x} ${y.toFixed(1)}l2.4 6h-4.8z`} />;
-        })}
-      </g>
-      {/* anklet bells */}
-      <g fill="#641B2B">
-        <circle cx="102" cy="138" r="1.3" />
-        <circle cx="106" cy="138" r="1.3" />
-        <circle cx="181" cy="138" r="1.3" />
-        <circle cx="185" cy="138" r="1.3" />
-      </g>
-      {/* ground line */}
-      <path d="M60 148h150" stroke="#8A6140" strokeWidth=".8" opacity=".6" />
-      {/* dhol */}
-      <g transform="translate(14 112)">
-        <rect x="0" y="4" width="40" height="26" rx="8" fill="#641B2B" stroke="#C9A45C" strokeWidth="1.1" />
-        <ellipse cx="2" cy="17" rx="4" ry="13" fill="#E8D6A3" stroke="#C9A45C" />
-        <ellipse cx="38" cy="17" rx="4" ry="13" fill="#E8D6A3" stroke="#C9A45C" />
-        <path d="M5 6l8 22 8-22 8 22 8-22" fill="none" stroke="#C9A45C" strokeWidth=".8" />
-        <path d="M44 0l-6 8M-4 2l6 6" stroke="#C9A45C" strokeWidth="1.2" strokeLinecap="round" />
-      </g>
-      {/* shehnai */}
-      <g transform="translate(206 104) rotate(32)">
-        <path d="M0 0l3 40h4l3-40z" fill="url(#foil-grad-paper)" />
-        <path d="M-4 40c2-2 16-2 18 0l-2 8h-14z" fill="url(#foil-grad-paper)" />
-        <g fill="#641B2B">
-          <circle cx="5" cy="12" r="1" />
-          <circle cx="5" cy="19" r="1" />
-          <circle cx="5" cy="26" r="1" />
+      <path d="M120 10l2.5 4-2.5 4-2.5-4z" fill="#C9A45C" opacity=".8" />
+
+      {/* drifting marigold petals */}
+      {PETALS.map(([x, y, r], i) => (
+        <path
+          key={i}
+          d={`M${x} ${y}c2-3 5-3 6 0-2 3-5 3-6 0z`}
+          fill="#D88B36"
+          className="anim-twinkle"
+          style={{ animationDelay: `${i * -0.7}s`, animationDuration: '4.5s' }}
+          transform={`rotate(${r} ${x} ${y})`}
+        />
+      ))}
+
+      <g transform="translate(-32 9) scale(.94)">
+        <ellipse cx="164" cy="151" rx="60" ry="3.4" fill="#8A6140" opacity=".2" />
+        {/* far legs */}
+        <g fill="#A67F4C">
+          <path d={`M134 94${LEG_FRONT}`} />
+          <path d={`M180 92${LEG_HIND}`} />
         </g>
-        <path d="M5 0v-6" stroke="#C9A45C" strokeWidth="1.4" />
+        {/* tail, tied with a ribbon */}
+        <path d="M208 64c12 4 18 18 16 40-1 14-6 24-12 30 2-14 2-30-2-42-2-8-4-14-8-20z" fill="#8A6140" />
+        <path d="M213 70c5 8 6 20 4 34M217 78c2 10 2 20 0 30" fill="none" stroke="#C9A45C" strokeWidth=".6" opacity=".7" />
+        <path d="M208 66l6-1 2 5-6 2z" fill="#641B2B" />
+        {/* body, then the arched neck and head */}
+        <path
+          d="M150 60c8 4 16 6 24 5 8-1 16-5 24-4 8 1 14 8 14 18 0 10-4 18-12 21-4 1-10 2-16 2-14 0-28 1-42 0-6 0-12-2-16-5-6-4-8-12-6-20z"
+          fill={coat}
+        />
+        <path
+          d="M162 64c-4-16-14-36-32-44-4-2-8-2-10-1-2 2-4 4-6 8-4 8-9 16-13 22-2 4-1 7 2 8 3 1 6 0 9-2 3-2 6-5 9-8 2-2 4-3 5-2 1 2 1 6 0 10-2 8-6 16-10 24-2 6 0 14 6 16 8 2 18 0 26-6 8-6 14-14 14-25z"
+          fill={coat}
+        />
+        {/* mane and forelock */}
+        <path d="M120 19c14-1 30 14 38 34l4 11c-6-10-12-18-18-24-6-6-14-12-22-16z" fill="#8A6140" />
+        <path d="M114 26c2-4 6-6 9-5-2 3-5 5-9 5z" fill="#8A6140" />
+        {/* Marwari ears, tips curling in */}
+        <g fill={coat} stroke="#A67F4C" strokeWidth=".6">
+          <path d="M113 23c-3-6-2-11 2-15 1 5 2 9 2 14z" />
+          <path d="M118 21c0-5 1-10-1-14 5 3 7 9 4 14z" />
+        </g>
+        {/* near legs + hooves */}
+        <g fill={coat}>
+          <path d={`M122 94${LEG_FRONT}`} />
+          <path d={`M192 88${LEG_HIND}`} />
+        </g>
+        <path d="M121 147h10v3h-10zM133 147h10v3h-10zM196 147h10v3h-10zM182 147h10v3h-10z" fill="#3D101D" opacity=".55" />
+        {/* ghungroo anklets */}
+        <g fill="#C9A45C">
+          <rect x="123.5" y="133" width="8.5" height="2.2" rx="1" />
+          <rect x="196" y="133" width="7.5" height="2.2" rx="1" />
+        </g>
+        <g fill="#641B2B">
+          {[125.5, 128, 130.5, 198, 200.5].map((x) => (
+            <circle key={x} cx={x} cy="136.6" r=".9" />
+          ))}
+        </g>
+        {/* eye, nostril */}
+        <path d="M115 31c2-1.6 4-1.6 5 0-1.6 1.4-3.4 1.4-5 0z" fill="#3D101D" />
+        <path d="M114.5 30.4c1-1.4 3.6-2 6-.4" fill="none" stroke="#3D101D" strokeWidth=".5" />
+        <path d="M103 49c1 1 1 2.4 0 3" fill="none" stroke="#3D101D" strokeWidth=".9" strokeLinecap="round" opacity=".7" />
+        {/* bridle with gold studs and a fringed browband */}
+        <path d="M121 22l-14 31M103.5 41.5c3 0 7 4 9.5 8.5M113 24l9 1" fill="none" stroke="#641B2B" strokeWidth="1.4" strokeLinecap="round" />
+        <g fill="#C9A45C">
+          <circle cx="107.5" cy="45.6" r="1.3" />
+          <circle cx="114.4" cy="38.4" r="1.1" />
+          <circle cx="117.3" cy="24.6" r="1.1" />
+          {[114, 116.5, 119, 121.5].map((x) => (
+            <path key={x} d={`M${x} 25.4l1 2.6-1 1.4-1-1.4z`} />
+          ))}
+        </g>
+        {/* kalangi plume */}
+        <path d="M118 20c0-4 1-8 3-10" fill="none" stroke="#8A6140" strokeWidth="1" />
+        <path d="M121 10c-4-4-4-10 0-14 2 5 2 10 0 14z" fill="#D88B36" />
+        <path d="M121 10c0-6 4-10 9-11-2 5-5 9-9 11z" fill="#641B2B" />
+        <path d="M121 10c-2-5-7-7-11-6 3 4 7 6 11 6z" fill="#C9A45C" />
+        <circle cx="121" cy="10" r="1.8" fill="#E8D6A3" stroke="#8A6140" strokeWidth=".5" />
+        {/* neck strands with a pendant */}
+        {along([156, 48], [140, 74], [118, 76], 11).map(([x, y]) => (
+          <circle key={`g${x}`} cx={x} cy={y} r="1.3" fill="#C9A45C" />
+        ))}
+        {along([160, 56], [144, 84], [120, 86], 12).map(([x, y]) => (
+          <circle key={`m${x}`} cx={x} cy={y} r="1.3" fill="#641B2B" />
+        ))}
+        <path d="M134 83v2" stroke="#C9A45C" strokeWidth=".6" />
+        <path d="M134 85l2.6 3.6-2.6 4.4-2.6-4.4z" fill="#C9A45C" stroke="#8A6140" strokeWidth=".4" />
+        {/* jhool — embroidered saddle cloth with a scalloped, tasselled hem */}
+        <path d={`M150 60c8 5 18 7 26 6 8-1 16-5 24-5l2 43${HEM}z`} fill="#641B2B" />
+        <path d="M154 66c8 4 16 5 22 4 7-1 13-4 20-4l1.5 33c-14 4-30 4-43 1z" fill="none" stroke="#C9A45C" strokeWidth=".8" />
+        <path
+          d="M156 70c7 3 14 4 20 3 6-1 11-3 17-3l1 26c-12 3-26 3-37 1z"
+          fill="none"
+          stroke="#C9A45C"
+          strokeWidth=".5"
+          strokeDasharray="1.2 1.6"
+        />
+        <g transform="translate(176 84)">
+          {Array.from({ length: 8 }, (_, i) => (
+            <path key={i} d="M0-3c2-3 2-6 0-8-2 2-2 5 0 8z" fill="#C9A45C" transform={`rotate(${i * 45})`} />
+          ))}
+          <circle r="3" fill="#D88B36" />
+          <circle r="1.3" fill="#E8D6A3" />
+        </g>
+        <g fill="#C9A45C" stroke="#C9A45C">
+          {Array.from({ length: 7 }, (_, i) => {
+            const x = (202 - i * 8.67).toFixed(1);
+            return <path key={i} d={`M${x} 104v3M${x} 106.5l1.8 4.5h-3.6z`} strokeWidth=".7" />;
+          })}
+        </g>
+        {/* royal saddle */}
+        <path d="M164 64c1-5 6-8 8-8 2 3 10 3 14 0 2 0 6 3 6 7-8-2-20-1-28 1z" fill="#C9A45C" stroke="#8A6140" strokeWidth=".6" />
+        <circle cx="172" cy="56.5" r="1.4" fill="#641B2B" />
+        <circle cx="186" cy="56.5" r="1.4" fill="#641B2B" />
       </g>
+
+      {/* marigolds strewn on the path */}
+      <Marigold x={48} y={146} s={1} />
+      <Marigold x={64} y={150} s={0.7} />
+      <Marigold x={192} y={148} s={0.9} />
+      <Marigold x={210} y={145} s={0.7} />
     </svg>
   );
 }

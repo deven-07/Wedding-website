@@ -22,7 +22,7 @@ export interface WeddingEvent {
 }
 
 /**
- * The celebration venue (used by all three events).
+ * The main celebration venue (Haldi-Carnival and Reception).
  * The venue QR code is generated from mapUrl by `npm run assets`.
  */
 const VENUE = {
@@ -31,6 +31,13 @@ const VENUE = {
   mapUrl: "https://maps.app.goo.gl/tvnQx9Tcj1kFTa986?g_st=ac",
 };
 const VENUE_LINE = `${VENUE.name}, ${VENUE.address}`;
+
+/** Where the Baarat Prasthan sets off from. */
+const BAARAT_VENUE = {
+  name: "Hotel Avon",
+  address: "Mandore, Jodhpur.",
+  mapUrl: "https://www.google.com/maps/search/?api=1&query=Hotel+Avon+Mandore+Jodhpur",
+};
 
 export const wedding = {
   invocation: "|| श्री गणेशाय नमः ||",
@@ -82,8 +89,8 @@ export const wedding = {
       isoStart: "2026-12-12T19:00:00+05:30",
       quote: "With music, celebration and blessings, the journey towards a beautiful new beginning begins.",
       theme: "baarat",
-      venue: VENUE_LINE,
-      mapUrl: VENUE.mapUrl,
+      venue: `${BAARAT_VENUE.name}, ${BAARAT_VENUE.address}`,
+      mapUrl: BAARAT_VENUE.mapUrl,
     },
   ] satisfies WeddingEvent[] as WeddingEvent[],
 
@@ -102,6 +109,8 @@ export const wedding = {
   venue: {
     ...VENUE,
     heading: "Venue",
+    /** Which celebrations take place here (Baarat Prasthan has its own venue). */
+    occasions: "Haldi-Carnival & Reception",
     qrAlt: "QR code — opens the venue location in Google Maps",
     qrHint: "Scan or tap the code to open the location",
     directions: "Get Directions",

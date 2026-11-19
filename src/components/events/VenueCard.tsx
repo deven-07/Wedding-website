@@ -7,7 +7,7 @@ import { LotusBloom } from '../ornaments/LotusBloom';
 import { GoldLink } from '../ui/GoldButton';
 
 /**
- * The venue for all three celebrations: name, address, a scannable QR code
+ * The main venue (Haldi-Carnival & Reception): name, address, a scannable QR code
  * (also tappable — guests on a phone can't scan their own screen) and a
  * "Get Directions" button. All values come from wedding.venue.
  */
@@ -39,6 +39,7 @@ export function VenueCard() {
         <h3 id="venue-heading" className="eyebrow mt-2 text-gold-deep">
           {v.heading}
         </h3>
+        <p className="mt-1 font-serif text-sm italic text-burgundy/80">{v.occasions}</p>
         <Divider tone="paper" className="mx-auto mt-2 h-4 w-[min(11rem,60%)]" />
         <p className="mt-4 font-decorative text-[length:clamp(1.35rem,6.6vw,1.85rem)] font-bold leading-tight tracking-[0.04em] text-maroon">
           {v.name}
