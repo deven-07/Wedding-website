@@ -1,7 +1,8 @@
 import { AnimatePresence, m } from 'framer-motion';
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useGuestName } from '../hooks/useGuestName';
 import { useHideOnScrollDown } from '../hooks/useScrollDirection';
+import { lazyWithRetry } from '../lib/lazyWithRetry';
 import { readStorage, removeStorage, STORAGE_KEYS, writeStorage } from '../lib/storage';
 import { WeddingIntro } from './intro/WeddingIntro';
 import { MusicToggle } from './ui/MusicToggle';
@@ -10,7 +11,14 @@ import { ShareButton } from './ui/ShareButton';
 
 /** The page below the opening is its own chunk; prefetched while the envelope shows. */
 const loadSiteContent = () => import('./SiteContent');
-const SiteContent = lazy(() => loadSiteContent().then((mod) => ({ default: mod.SiteContent })));
+// If the page files changed after a redeploy, reload once — straight to the
+// invitation, since the guest has already opened the envelope.
+const SiteContent = lazyWithRetry(
+  () => loadSiteContent().then((mod) => ({ default: mod.SiteContent })),
+  () => {
+    writeStorage('session', STORAGE_KEYS.opened, '1');
+  },
+);
 
 type Mode = 'intro' | 'revealing' | 'site';
 
@@ -49,7 +57,8 @@ export function Invitation() {
   useEffect(() => {
     if (mode !== 'intro') return;
     const t = window.setTimeout(() => {
-      void loadSiteContent();
+      // a failed prefetch is retried (and recovered) when the page actually mounts
+      loadSiteContent().catch(() => undefined);
     }, 1500);
     return () => {
       window.clearTimeout(t);

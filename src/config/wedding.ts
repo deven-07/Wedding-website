@@ -138,6 +138,8 @@ export const wedding = {
     linkCopied: "Link copied",
     copyFailed: "Could not copy — please copy the link manually",
     progressLabel: "Invitation sections",
+    loadFailed: "Part of the invitation could not load. Please check your connection and try again.",
+    reload: "Reload invitation",
   },
 
   /** Page title / link-preview text (also used when sharing). */

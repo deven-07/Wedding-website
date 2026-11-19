@@ -1,12 +1,14 @@
 import { LazyMotion, MotionConfig } from 'framer-motion';
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import { FoilDefs } from './components/ornaments/FoilDefs';
 import { Invitation } from './components/Invitation';
 import { MusicProvider } from './components/ui/MusicProvider';
 import { ToastProvider } from './components/ui/Toast';
 import { useHashRoute } from './hooks/useHashRoute';
+import { ErrorBoundary } from './components/ui/ErrorBoundary';
+import { lazyWithRetry } from './lib/lazyWithRetry';
 
-const CreateLinkPage = lazy(() => import('./components/CreateLinkPage'));
+const CreateLinkPage = lazyWithRetry(() => import('./components/CreateLinkPage'));
 const loadMotionFeatures = () => import('./lib/motionFeatures').then((mod) => mod.default);
 
 export default function App() {
@@ -15,6 +17,7 @@ export default function App() {
   return (
     <MotionConfig reducedMotion="user">
       <LazyMotion features={loadMotionFeatures} strict>
+        <ErrorBoundary>
         <ToastProvider>
           <FoilDefs />
           {route === '/create-link' ? (
@@ -27,6 +30,7 @@ export default function App() {
             </MusicProvider>
           )}
         </ToastProvider>
+        </ErrorBoundary>
       </LazyMotion>
     </MotionConfig>
   );

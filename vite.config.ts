@@ -105,6 +105,12 @@ function preloadCriticalFonts(patterns: RegExp[]): Plugin {
 /**
  * Inlines the (single, ~8 KB gzipped) stylesheet into index.html so the
  * opening screen can paint without waiting on a render-blocking CSS request.
+ *
+ * The .css file itself is KEPT in the output: lazily loaded chunks list it as
+ * a preload dependency, and if it 404s (as it does on Vercel/Netlify) the
+ * chunk fails to load and the page goes blank. A non-applying marker link
+ * (media="not all") tells Vite's preloader the styles are already present,
+ * so it never fetches or waits for the file.
  */
 function inlineCss(): Plugin {
   return {
@@ -122,9 +128,10 @@ function inlineCss(): Plugin {
           const link = new RegExp(`<link rel="stylesheet"[^>]*href="/${file.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[^>]*>`);
           if (!link.test(out)) continue;
           const css = typeof chunk.source === 'string' ? chunk.source : new TextDecoder().decode(chunk.source);
-          out = out.replace(link, () => `<style>${css}</style>`);
-          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- drop the now-unused file from the output
-          delete bundle[file];
+          out = out.replace(
+            link,
+            () => `<style>${css}</style>\n    <link rel="stylesheet" href="/${file}" media="not all" data-inlined="true">`,
+          );
         }
         return out;
       },

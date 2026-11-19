@@ -1,11 +1,12 @@
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
+import { lazyWithRetry } from '../lib/lazyWithRetry';
 import { HeroSection } from './hero/HeroSection';
 import { SiteFooter } from './layout/SiteFooter';
 
 // Everything below the hero is split into its own chunks.
-const EventTimeline = lazy(() => import('./events/EventTimeline'));
-const WeddingCountdown = lazy(() => import('./countdown/WeddingCountdown'));
-const BlessingsSection = lazy(() => import('./blessings/BlessingsSection'));
+const EventTimeline = lazyWithRetry(() => import('./events/EventTimeline'));
+const WeddingCountdown = lazyWithRetry(() => import('./countdown/WeddingCountdown'));
+const BlessingsSection = lazyWithRetry(() => import('./blessings/BlessingsSection'));
 
 function SectionFallback({ className }: { className: string }) {
   return <div aria-hidden="true" className={`min-h-screen ${className}`} />;
