@@ -6,12 +6,12 @@ import { useInView } from '../../hooks/useInView';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { mulberry32, range } from '../../lib/random';
 import { PetalBurst } from '../ambient/PetalBurst';
-import { BaaratArt, CarnivalArt, NightArt } from '../ornaments/EventArt';
+import { BaaratArt, SouthIndianArt, NightArt } from '../ornaments/EventArt';
 import { MarigoldPetal } from '../ornaments/Petals';
 import type { OrnamentProps } from '../ornaments/types';
 import { ACTION_BASE, ACTION_BUTTON, type ActionTone } from './actionStyles';
 import { AddToCalendar } from './AddToCalendar';
-import { Bunting, DecoFrame, Jhalar, NightSparkles, RoyalBorder } from './CardOrnaments';
+import { Thoranam, DecoFrame, Jhalar, NightSparkles, RoyalBorder } from './CardOrnaments';
 
 interface Skin {
   surface: string;
@@ -29,7 +29,7 @@ interface Skin {
 
 /**
  * Three distinct, meaningful skins:
- *  - Haldi-Carnival: a sunlit daytime fair — saffron wash, bunting, pinwheels, confetti.
+ *  - Haldi (South Indian): a sunlit courtyard — turmeric wash, mango-leaf thoranam, kalash, kolam.
  *  - Reception: an evening of light — midnight burgundy, art-deco gold, chandelier & stars.
  *  - Baarat Prasthan: a royal procession decree — ivory parchment, maroon jhalar, the horse.
  */
@@ -42,12 +42,12 @@ const SKINS: Record<EventTheme, Skin> = {
     meta: 'text-gold-deep',
     quote: 'text-burgundy',
     tone: 'paper',
-    Art: CarnivalArt,
+    Art: SouthIndianArt,
     artClass: 'w-[min(15rem,86%)]',
     contentTop: 'pt-14',
     ornaments: (
       <>
-        <Bunting className="absolute inset-x-0 top-0 h-12 w-full" />
+        <Thoranam className="absolute inset-x-0 top-0 h-12 w-full" />
         <div className="absolute inset-[9px] rounded-[14px] border border-saffron/55" />
         <div className="absolute inset-[14px] rounded-[10px] border border-dashed border-saffron/40" />
       </>
@@ -92,7 +92,7 @@ const SKINS: Record<EventTheme, Skin> = {
   },
 };
 
-/** A few marigold petals drifting down from the top edge (Haldi-Carnival hover/tap). */
+/** A few marigold petals drifting down from the top edge (Haldi hover/tap). */
 function PetalDrift({ seed }: { seed: number }) {
   const petals = useMemo(() => {
     const rand = mulberry32(seed);

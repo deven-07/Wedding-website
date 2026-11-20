@@ -3,34 +3,37 @@ import { CornerFiligree, type Corner } from '../ornaments/CornerFiligree';
 import { Sparkle } from '../ornaments/Sparkle';
 
 /* ---------------------------------------------------------------------- */
-/* Haldi-Carnival: festive bunting                                        */
+/* Haldi (South Indian): mango-leaf thoranam                              */
 /* ---------------------------------------------------------------------- */
 
-const FLAG_COLOURS = ['#D88B36', '#641B2B', '#C9A45C', '#8A6140'];
+const LEAF_GREENS = ['#4E6B2C', '#6E8F3E'];
 
-/** A string of triangular carnival flags that sway gently. */
-export function Bunting({ flags = 13, className = '' }: { flags?: number; className?: string }) {
+/** A doorway thoranam of mango leaves and marigolds that sways gently. */
+export function Thoranam({ leaves = 15, className = '' }: { leaves?: number; className?: string }) {
   const W = 300;
   const items = useMemo(
     () =>
-      Array.from({ length: flags }, (_, i) => {
-        const t = (i + 0.5) / flags;
+      Array.from({ length: leaves }, (_, i) => {
+        const t = (i + 0.5) / leaves;
         const x = t * W;
-        // point on the quadratic string M0 4 Q150 34 300 4
-        const y = (1 - t) ** 2 * 4 + 2 * (1 - t) * t * 34 + t ** 2 * 4;
-        return { x, y, colour: FLAG_COLOURS[i % FLAG_COLOURS.length] ?? '#D88B36', delay: `${(i * -0.27).toFixed(2)}s` };
+        // point on the quadratic string M0 4 Q150 30 300 4
+        const y = (1 - t) ** 2 * 4 + 2 * (1 - t) * t * 30 + t ** 2 * 4;
+        return { x, y, colour: LEAF_GREENS[i % 2] ?? '#4E6B2C', delay: `${(i * -0.27).toFixed(2)}s` };
       }),
-    [flags],
+    [leaves],
   );
   return (
     <svg viewBox={`0 0 ${W} 48`} preserveAspectRatio="xMidYMin slice" aria-hidden="true" className={className}>
-      <path d={`M0 4Q150 34 ${W} 4`} fill="none" stroke="#8A6140" strokeWidth="1.1" />
+      <path d={`M0 4Q150 30 ${W} 4`} fill="none" stroke="#8A6140" strokeWidth="1.1" />
       {items.map((f, i) => (
         <g key={i} transform={`translate(${f.x.toFixed(1)} ${f.y.toFixed(1)})`}>
           <g className="anim-bunting" style={{ animationDelay: f.delay, transformBox: 'fill-box' }}>
-            <path d="M-8 0h16l-8 15z" fill={f.colour} />
-            <path d="M-5 1.6h10" stroke="#FFF8E9" strokeWidth=".7" opacity=".55" />
+            <path d="M0 0c-5 5-5 13 0 19 5-6 5-14 0-19z" fill={f.colour} />
+            <path d="M0 1v16" stroke="#E8D6A3" strokeWidth=".5" opacity=".6" />
           </g>
+          {i < leaves - 1 ? (
+            <circle cx={(W / leaves / 2).toFixed(1)} cy="2" r="3" fill={i % 2 ? '#C9A45C' : '#D88B36'} />
+          ) : null}
         </g>
       ))}
     </svg>

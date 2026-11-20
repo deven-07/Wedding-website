@@ -2,113 +2,174 @@ import { useId } from 'react';
 import { a11yProps, type OrnamentProps } from './types';
 
 /* ---------------------------------------------------------------------- */
-/* Shared bits                                                            */
+/* Haldi — South Indian: banana leaves, jasmine garland with temple       */
+/* bells, a purna kumbham on a kolam, and bowls of turmeric               */
 /* ---------------------------------------------------------------------- */
 
-function Bloom({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
+type XY = readonly [number, number];
+
+/** Point on a quadratic curve. */
+function quad(p0: XY, c: XY, p1: XY, t: number): XY {
+  const q = (k: 0 | 1) => (1 - t) ** 2 * p0[k] + 2 * (1 - t) * t * c[k] + t ** 2 * p1[k];
+  return [q(0), q(1)];
+}
+
+const GARLAND: [XY, XY, XY] = [
+  [0, 6],
+  [120, 48],
+  [240, 6],
+];
+
+function BananaLeaf({ x, y, rot, len, w, fill }: { x: number; y: number; rot: number; len: number; w: number; fill: string }) {
+  const veins = Array.from({ length: 9 }, (_, i) => {
+    const t = 0.12 + i * 0.09;
+    const yy = (-len * t).toFixed(1);
+    const vw = w * Math.sin(Math.PI * Math.min(1, t * 1.15)) * 0.9;
+    return `M0 ${yy}l${(-vw).toFixed(1)} ${(-vw * 0.5).toFixed(1)}M0 ${yy}l${vw.toFixed(1)} ${(-vw * 0.5).toFixed(1)}`;
+  }).join('');
   return (
-    <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <circle r="9" fill="#D88B36" />
-      {Array.from({ length: 10 }, (_, i) => {
-        const a = (i / 10) * Math.PI * 2;
-        return <circle key={i} cx={(Math.cos(a) * 7.4).toFixed(2)} cy={(Math.sin(a) * 7.4).toFixed(2)} r="3.2" fill="#D88B36" />;
-      })}
-      <circle r="5.4" fill="#C9A45C" />
-      {Array.from({ length: 7 }, (_, i) => {
-        const a = (i / 7) * Math.PI * 2;
-        return <circle key={`i${i}`} cx={(Math.cos(a) * 3.6).toFixed(2)} cy={(Math.sin(a) * 3.6).toFixed(2)} r="1.7" fill="#D88B36" />;
-      })}
-      <circle r="1.6" fill="#8A6140" />
+    <g transform={`translate(${x} ${y}) rotate(${rot})`}>
+      <path d={`M0 0C${-w} ${-len * 0.3} ${-w * 1.05} ${-len * 0.75} 0 ${-len}C${w * 0.95} ${-len * 0.75} ${w} ${-len * 0.3} 0 0z`} fill={fill} />
+      <path d={veins} stroke="#3F5A24" strokeWidth=".5" opacity=".45" />
+      <path d={`M0 4V${-len + 4}`} stroke="#E8D6A3" strokeWidth=".8" opacity=".5" />
     </g>
   );
 }
 
-/** Spinning paper pinwheel (phirki) on a stick. */
-function Pinwheel({ x, y, s = 1, reverse = false }: { x: number; y: number; s?: number; reverse?: boolean }) {
-  const colours = ['#D88B36', '#641B2B', '#C9A45C', '#D88B36'];
+function TempleBell({ t, delay }: { t: number; delay: string }) {
+  const [x, y] = quad(...GARLAND, t);
   return (
-    <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <path d="M0 2v46" stroke="#8A6140" strokeWidth="2" strokeLinecap="round" />
-      <g className={reverse ? 'anim-spin-pin-rev' : 'anim-spin-pin'} style={{ transformBox: 'fill-box', transformOrigin: 'center' }}>
-        {colours.map((c, i) => (
-          <path key={i} d="M0 0V-16Q11-13 0 0z" fill={c} transform={`rotate(${i * 90})`} />
-        ))}
-        <circle r="16.5" fill="none" />
+    <g transform={`translate(${x.toFixed(1)} ${y.toFixed(1)})`}>
+      <g className="anim-bunting" style={{ animationDelay: delay, transformBox: 'fill-box', transformOrigin: 'top center' }}>
+        <path d="M0 2v12" stroke="#8A6140" strokeWidth=".7" />
+        <circle cy="5" r="1.4" fill="#FFFDF6" stroke="#C9A45C" strokeWidth=".3" />
+        <circle cy="9" r="1.4" fill="#FFFDF6" stroke="#C9A45C" strokeWidth=".3" />
+        <path d="M-5 24c0-6 2-10 5-10s5 4 5 10z" fill="url(#foil-grad-paper)" />
+        <rect x="-6" y="23.5" width="12" height="1.6" rx=".8" fill="#8A6140" />
+        <circle cy="26.6" r="1.4" fill="#754B36" />
       </g>
-      <circle r="2.2" fill="#FFF8E9" stroke="#8A6140" strokeWidth=".8" />
     </g>
   );
 }
 
-/* ---------------------------------------------------------------------- */
-/* Haldi-Carnival — a sunny fair: rising sun, pinwheels, turmeric urli    */
-/* ---------------------------------------------------------------------- */
+/** Small brass urli of turmeric paste with floating flowers. */
+function TurmericBowl({ x, brass }: { x: number; brass: string }) {
+  const flowers: [number, string][] = [
+    [-16, '#D88B36'],
+    [-6, '#FFFDF6'],
+    [6, '#FFFDF6'],
+    [16, '#D88B36'],
+  ];
+  return (
+    <g transform={`translate(${x} 128)`}>
+      <path d="M-22 0c2 11 13 16 22 16s20-5 22-16z" fill={brass} />
+      <ellipse rx="22.7" ry="3.8" fill="#8A6140" />
+      <ellipse cy="-.4" rx="20.6" ry="2.9" fill="#E0A12E" />
+      {flowers.map(([fx, c]) => (
+        <g key={fx} transform={`translate(${fx} -.6) scale(.42)`}>
+          {Array.from({ length: 6 }, (_, i) => (
+            <ellipse key={i} cy="-2.6" rx="1.6" ry="2.6" fill={c} stroke="#C9A45C" strokeWidth=".3" transform={`rotate(${i * 60})`} />
+          ))}
+        </g>
+      ))}
+      <path d="M-5 15h10l-1.3 3h-7.4z" fill="#754B36" />
+    </g>
+  );
+}
 
-export function CarnivalArt({ title, className = '', ...rest }: OrnamentProps) {
+export function SouthIndianArt({ title, className = '', ...rest }: OrnamentProps) {
   const id = useId().replace(/:/g, '');
+  const brass = `url(#${id}-brass)`;
+  const ring = (r: number, n: number, rx: number, ry: number) =>
+    Array.from({ length: n }, (_, k) => {
+      const a = (k / n) * Math.PI * 2;
+      return <circle key={`${r}-${k}`} cx={(120 + Math.cos(a) * rx).toFixed(1)} cy={(143 + Math.sin(a) * ry).toFixed(1)} r=".9" />;
+    });
   return (
     <svg viewBox="0 0 240 150" className={className} {...a11yProps(title)} {...rest}>
       {title ? <title>{title}</title> : null}
       <defs>
-        <radialGradient id={`${id}-sun`} cx=".5" cy=".55" r=".55">
-          <stop offset="0" stopColor="#FFF8E9" />
-          <stop offset=".45" stopColor="#E8D6A3" />
-          <stop offset="1" stopColor="#D88B36" />
-        </radialGradient>
+        <linearGradient id={`${id}-leaf`} x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0" stopColor="#4E6B2C" />
+          <stop offset=".6" stopColor="#6E8F3E" />
+          <stop offset="1" stopColor="#8FAA55" />
+        </linearGradient>
+        <linearGradient id={`${id}-leaf2`} x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0" stopColor="#3F5A24" />
+          <stop offset="1" stopColor="#6E8F3E" />
+        </linearGradient>
         <linearGradient id={`${id}-brass`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#E8D6A3" />
           <stop offset=".4" stopColor="#C9A45C" />
           <stop offset="1" stopColor="#754B36" />
         </linearGradient>
+        <radialGradient id={`${id}-glow`} cx=".5" cy=".6" r=".5">
+          <stop offset="0" stopColor="#FFF8E9" />
+          <stop offset="1" stopColor="#FFF8E9" stopOpacity="0" />
+        </radialGradient>
       </defs>
+      <ellipse cx="120" cy="100" rx="70" ry="44" fill={`url(#${id}-glow)`} />
 
-      {/* sun with slowly turning rays */}
-      <g className="anim-spin-slow" style={{ transformBox: 'fill-box', transformOrigin: 'center', animationDuration: '60s' }}>
-        {Array.from({ length: 18 }, (_, i) => (
-          <path key={i} d="M120 18l2.6 18h-5.2z" fill="#D88B36" opacity=".55" transform={`rotate(${i * 20} 120 66)`} />
-        ))}
-        <circle cx="120" cy="66" r="54" fill="none" />
+      {/* banana leaves framing the scene */}
+      <BananaLeaf x={34} y={150} rot={-30} len={100} w={16} fill={`url(#${id}-leaf2)`} />
+      <BananaLeaf x={206} y={150} rot={30} len={100} w={16} fill={`url(#${id}-leaf2)`} />
+      <BananaLeaf x={46} y={152} rot={-10} len={116} w={18} fill={`url(#${id}-leaf)`} />
+      <BananaLeaf x={194} y={152} rot={10} len={116} w={18} fill={`url(#${id}-leaf)`} />
+
+      {/* kolam drawn on the floor */}
+      <g fill="none" stroke="#641B2B" strokeWidth=".7" opacity=".55">
+        <ellipse cx="120" cy="143" rx="76" ry="9" />
+        {Array.from({ length: 8 }, (_, i) => {
+          const a = (i / 8) * Math.PI * 2;
+          const x = (120 + Math.cos(a) * 62).toFixed(1);
+          const y = (143 + Math.sin(a) * 6).toFixed(1);
+          return <ellipse key={i} cx={x} cy={y} rx="7" ry="2.4" transform={`rotate(${(Math.cos(a) * Math.sin(a) * 20).toFixed(1)} ${x} ${y})`} />;
+        })}
       </g>
-      <circle cx="120" cy="66" r="27" fill={`url(#${id}-sun)`} />
-
-      {/* pinwheels */}
-      <Pinwheel x={40} y={70} s={1.1} />
-      <Pinwheel x={202} y={64} s={0.95} reverse />
-
-      {/* urli of turmeric paste */}
-      <path d="M62 100c5 26 30 38 58 38s53-12 58-38z" fill={`url(#${id}-brass)`} />
-      <ellipse cx="120" cy="100" rx="60" ry="10" fill="#8A6140" />
-      <ellipse cx="120" cy="99" rx="54" ry="7.5" fill="#D88B36" />
-      <path d="M104 99c5-3 11-1 8 2-4 3-14 0-11-4 5-5 20-3 19 3" fill="none" stroke="#8A6140" strokeWidth="1" strokeLinecap="round" opacity=".8" />
-      <path d="M106 136h28l-4 8h-20z" fill="#754B36" />
-      <Bloom x={74} y={94} s={0.8} />
-      <Bloom x={166} y={94} s={0.8} />
-      <Bloom x={140} y={92} s={0.6} />
-
-      {/* confetti */}
-      <g>
-        {[
-          [18, 30, '#641B2B', 20],
-          [64, 22, '#D88B36', -30],
-          [176, 20, '#641B2B', 40],
-          [224, 34, '#C9A45C', -15],
-          [12, 112, '#D88B36', 60],
-          [228, 116, '#641B2B', -45],
-          [92, 40, '#C9A45C', 10],
-          [150, 34, '#D88B36', -60],
-        ].map(([x, y, c, r], i) => (
-          <rect key={i} x={x as number} y={y as number} width="6" height="3" rx="1" fill={c as string} transform={`rotate(${r as number} ${x as number} ${y as number})`} />
-        ))}
-        {[
-          [30, 52, '#C9A45C'],
-          [210, 92, '#D88B36'],
-          [84, 12, '#641B2B'],
-          [160, 50, '#641B2B'],
-          [196, 14, '#C9A45C'],
-        ].map(([x, y, c], i) => (
-          <circle key={`d${i}`} cx={x as number} cy={y as number} r="2" fill={c as string} />
-        ))}
+      <g fill="#641B2B" opacity=".6">
+        {ring(0, 12, 44, 4)}
+        {ring(1, 18, 56, 6)}
+        {ring(2, 24, 68, 8)}
       </g>
+
+      {/* purna kumbham — brass kalash with mango leaves and a coconut */}
+      <ellipse cx="120" cy="146" rx="26" ry="3.4" fill="#8A6140" />
+      <ellipse cx="120" cy="145" rx="22" ry="2.2" fill={brass} />
+      <g transform="translate(120 34) scale(1.1)">
+        {[-50, -30, -12, 12, 30, 50].map((r, i) => (
+          <path key={r} d="M0 48c-5-8-5-18 0-26 5 8 5 18 0 26z" fill={i % 2 ? '#6E8F3E' : '#4E6B2C'} transform={`rotate(${r} 0 50)`} />
+        ))}
+        <ellipse cy="38" rx="9" ry="11" fill="#8A6140" />
+        <path d="M-5 44c-2-6-1-12 2-16M0 46c-1-6 0-14 2-18M5 43c1-5 0-10-2-14" fill="none" stroke="#5C3A22" strokeWidth=".5" opacity=".6" />
+        <path d="M-6 32c2-4 10-4 12 0" fill="none" stroke="#5C3A22" strokeWidth="1.4" />
+        <path d="M-1 27l1-4 1 4z" fill="#754B36" />
+        <path d="M-12 48h24l-2 6h-20z" fill={brass} />
+        <path d="M-10 54c-14 4-20 14-20 24 0 12 12 22 30 22s30-10 30-22c0-10-6-20-20-24z" fill={brass} />
+        <path d="M-28 74c10 4 46 4 56 0" fill="none" stroke="#641B2B" strokeWidth="2.2" />
+        <path d="M-28 74c10 4 46 4 56 0" fill="none" stroke="#C9A45C" strokeWidth=".6" strokeDasharray="1.5 1.5" />
+        <path d="M-4 66l4-6 4 6-4 4z" fill="#D88B36" />
+        <circle cy="66" r="1.2" fill="#641B2B" />
+        <path d="M-18 62c4-4 8-5 10-5" fill="none" stroke="#FFF8E9" strokeWidth="1.4" opacity=".5" />
+      </g>
+
+      {/* turmeric (haldi) bowls */}
+      <TurmericBowl x={64} brass={brass} />
+      <TurmericBowl x={176} brass={brass} />
+
+      {/* jasmine garland with kanakambaram accents and temple bells */}
+      <path d="M0 6Q120 48 240 6" fill="none" stroke="#8A6140" strokeWidth=".7" />
+      {Array.from({ length: 34 }, (_, i) => {
+        const [bx, by] = quad(...GARLAND, (i + 0.5) / 34);
+        const x = bx.toFixed(1);
+        const y = (by + 1).toFixed(1);
+        return i % 6 === 3 ? (
+          <circle key={i} cx={x} cy={y} r="2.6" fill="#D88B36" />
+        ) : (
+          <ellipse key={i} cx={x} cy={y} rx="1.6" ry="2.6" fill="#FFFDF6" stroke="#C9A45C" strokeWidth=".4" transform={`rotate(${i % 2 ? 20 : -20} ${x} ${y})`} />
+        );
+      })}
+      <TempleBell t={0.3} delay="0s" />
+      <TempleBell t={0.7} delay="-1.1s" />
     </svg>
   );
 }

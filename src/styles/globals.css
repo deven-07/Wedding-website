@@ -196,7 +196,7 @@
     color: var(--champagne);
   }
 
-  /* Haldi-Carnival card: sun-washed saffron on cream */
+  /* Haldi (South Indian) card: sun-washed turmeric on cream */
   .skin-haldi {
     background-color: var(--cream);
     background-image:
@@ -531,12 +531,6 @@
 .anim-twinkle {
   animation: twinkle 2.6s ease-in-out infinite;
 }
-.anim-spin-pin {
-  animation: spin-cw 5s linear infinite;
-}
-.anim-spin-pin-rev {
-  animation: spin-ccw 6.5s linear infinite;
-}
 @keyframes bunting-sway {
   0%,
   100% {
@@ -608,8 +602,6 @@
   .anim-spin-slower,
   .anim-bob,
   .anim-sweep,
-  .anim-spin-pin,
-  .anim-spin-pin-rev,
   .anim-bunting,
   .anim-twinkle,
   .ambient-only {

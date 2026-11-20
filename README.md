@@ -40,7 +40,7 @@ The venue is set once at the top of `wedding.ts` and used by all three events:
 ```ts
 const VENUE = {
   name: "Jai Chandragarh Palace",
-  address: "Near Police Station, Mandore, Jodhpur.",
+  address: "Mandor II, Before Mandore Police Station, Jodhpur.",
   mapUrl: "https://maps.app.goo.gl/tvnQx9Tcj1kFTa986?g_st=ac",
 };
 ```

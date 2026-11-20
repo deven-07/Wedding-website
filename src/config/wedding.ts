@@ -22,12 +22,12 @@ export interface WeddingEvent {
 }
 
 /**
- * The main celebration venue (Haldi-Carnival and Reception).
+ * The main celebration venue (Haldi and Reception).
  * The venue QR code is generated from mapUrl by `npm run assets`.
  */
 const VENUE = {
   name: "Jai Chandragarh Palace",
-  address: "Near Police Station, Mandore, Jodhpur.",
+  address: "Mandor II, Before Mandore Police Station, Jodhpur.",
   mapUrl: "https://maps.app.goo.gl/tvnQx9Tcj1kFTa986?g_st=ac",
 };
 const VENUE_LINE = `${VENUE.name}, ${VENUE.address}`;
@@ -61,7 +61,7 @@ export const wedding = {
   events: [
     {
       id: "haldi",
-      title: "HALDI-CARNIVAL",
+      title: "HALDI – SOUTH INDIAN THEME",
       date: "10 December 2026",
       time: "12:00 PM",
       isoStart: "2026-12-10T12:00:00+05:30",
@@ -110,7 +110,7 @@ export const wedding = {
     ...VENUE,
     heading: "Venue",
     /** Which celebrations take place here (Baarat Prasthan has its own venue). */
-    occasions: "Haldi-Carnival & Reception",
+    occasions: "Haldi & Reception",
     qrAlt: "QR code — opens the venue location in Google Maps",
     qrHint: "Scan or tap the code to open the location",
     directions: "Get Directions",

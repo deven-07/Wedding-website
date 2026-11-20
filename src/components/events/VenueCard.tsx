@@ -7,7 +7,7 @@ import { LotusBloom } from '../ornaments/LotusBloom';
 import { GoldLink } from '../ui/GoldButton';
 
 /**
- * The main venue (Haldi-Carnival & Reception): name, address, a scannable QR code
+ * The main venue (Haldi & Reception): name, address, a scannable QR code
  * (also tappable — guests on a phone can't scan their own screen) and a
  * "Get Directions" button. All values come from wedding.venue.
  */
